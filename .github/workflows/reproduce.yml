@@ -1,0 +1,38 @@
+name: Reproduce paper outputs
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  reproduce:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install locked environment
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-lock.txt
+          python -m pip install --no-build-isolation --no-deps -e .
+          python -m pip check
+      - name: Install paper toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y latexmk texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra
+      - name: Reproduce and verify
+        run: make reproduce PYTHON=python
+      - name: Build and inspect PDF
+        run: make paper PYTHON=python
+      - name: Upload paper outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: fha-paper-outputs
+          path: |
+            outputs/
+            data/processed/*.csv
+            paper/fha443.pdf

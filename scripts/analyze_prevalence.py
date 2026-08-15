@@ -14,6 +14,7 @@ from scipy.stats import beta
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from fha import config  # noqa: E402
 from fha import prevalence as pv  # noqa: E402
+from fha.classify import build_clean_corpus  # noqa: E402
 from fha.extract import extract_case  # noqa: E402
 from sklearn.metrics import precision_recall_fscore_support  # noqa: E402
 
@@ -33,11 +34,6 @@ def assurance(n10, n01, n_observed, n_target, alpha=0.05, gridsize=80):
                      for g, w in zip(grid, weights)))
 
 OUT = config.OUTPUTS / "paper" / "validation"
-
-# Regex extractor shares over the paper's 417 substantive clusters.
-PAPER_SHARES_417 = {"disparate_treatment": 0.376, "disparate_impact": 0.281,
-                    "refusal_rent_sell": 0.237, "reasonable_accommodation": 0.355,
-                    "zoning_exclusionary": 0.094}
 
 PAIRS = [("reasonable_accommodation", "disparate_impact"),
          ("disparate_treatment", "reasonable_accommodation"),
@@ -81,12 +77,23 @@ def regex_operating_characteristics(corpus):
     return out, len(ids)
 
 
-def build_prevalence_table(votes, substantive, regex_pr):
+def regex_shares(corpus):
+    clean, _ = build_clean_corpus(list(corpus.values()), require_nos443=True)
+    rows = [extract_case(record) for record in clean]
+    if len(rows) != 417:
+        raise SystemExit(f"expected 417 substantive clusters, got {len(rows)}")
+    return {
+        claim: sum(int(row[f"claim_{claim}"]) for row in rows) / len(rows)
+        for claim in CLAIMS
+    }
+
+
+def build_prevalence_table(votes, substantive, regex_pr, regex_share):
     table = pv.prevalence_table(votes, substantive)
     rows = []
     for _, row in table.iterrows():
         claim = row["construct"]
-        observed = PAPER_SHARES_417[claim]
+        observed = regex_share[claim]
         precision, recall = regex_pr[claim]
         rows.append({
             "construct": claim,
@@ -95,7 +102,7 @@ def build_prevalence_table(votes, substantive, regex_pr):
             "llm_share": round(float(row["rate"]), 3),
             "wilson_lo": round(float(row["ci_low"]), 3),
             "wilson_hi": round(float(row["ci_high"]), 3),
-            "regex_share_417": observed,
+            "regex_share_417": round(observed, 3),
             "regex_precision": round(precision, 3),
             "regex_recall": round(recall, 3),
             "regex_share_417_corrected": round(
@@ -211,7 +218,7 @@ def main():
     print_denominators(index, len(drawn), len(substantive), len(drawn) - len(scored))
 
     regex_pr, n_overlap = regex_operating_characteristics(corpus)
-    table = build_prevalence_table(votes, substantive, regex_pr)
+    table = build_prevalence_table(votes, substantive, regex_pr, regex_shares(corpus))
     paired = build_paired_tests(votes, substantive)
 
     focal = pv.mcnemar_exact(votes, substantive, *FOCAL_PAIR)
@@ -235,8 +242,21 @@ def main():
         out_dir.mkdir(parents=True, exist_ok=True)
         table.to_csv(out_dir / "prevalence_random.csv", index=False)
         paired.to_csv(out_dir / "paired_tests.csv", index=False)
+        summary = {
+            "seed": index["seed"],
+            "frame_size": index["frame_size"],
+            "n_drawn": len(drawn),
+            "n_substantive": len(substantive),
+            "n_overlap": n_overlap,
+            "self_consistency": committed["selfConsistency"],
+            "power": power,
+        }
+        (out_dir / "prevalence_summary.json").write_text(
+            json.dumps(summary, indent=2) + "\n", encoding="utf-8"
+        )
         print(f"\nwrote {out_dir / 'prevalence_random.csv'}")
         print(f"wrote {out_dir / 'paired_tests.csv'}")
+        print(f"wrote {out_dir / 'prevalence_summary.json'}")
 
     print("\n" + "=" * 78)
     print(SILVER_WARNING)

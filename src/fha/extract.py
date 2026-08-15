@@ -138,9 +138,9 @@ def extract_outcomes(text: str, court_level: str | None = None,
         "settlement_inferred": settlement,
         "outcome_evidence": json.dumps({
             "plaintiff": [x for pats in PLAINTIFF_WIN_CUES
-                          for x in _span_hits(re.compile(pats, re.IGNORECASE), tail)],
+                          for x in _span_hits(re.compile(pats, re.IGNORECASE), text)],
             "defendant": [x for pats in DEFENDANT_WIN_CUES
-                          for x in _span_hits(re.compile(pats, re.IGNORECASE), tail)],
+                          for x in _span_hits(re.compile(pats, re.IGNORECASE), text)],
         }, ensure_ascii=False, separators=(",", ":")),
     }
 

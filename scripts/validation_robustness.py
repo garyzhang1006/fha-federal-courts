@@ -5,6 +5,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from sklearn.metrics import precision_recall_fscore_support
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
@@ -65,6 +66,30 @@ def run_twfe(feat, weights=None):
             "p": round(res["p"], 4), "n": res["n"]}
 
 
+def gold_micro(feat):
+    human = json.load((config.VALIDATION / "gold_human_codings.json").open())
+    primary = {row["case_id"]: row for row in human["primary"]}
+    machine = {row["cluster_id"]: row for row in feat.to_dict("records")}
+    ids = sorted(set(primary) & set(machine))
+    y_true = np.array([
+        primary[case_id]["claims"][claim.replace("claim_", "")]
+        for case_id in ids for claim in CLAIMS
+    ])
+    y_pred = np.array([
+        int(machine[case_id][claim])
+        for case_id in ids for claim in CLAIMS
+    ])
+    precision, recall, f1, _ = precision_recall_fscore_support(
+        y_true, y_pred, average="binary", zero_division=0
+    )
+    return {
+        "n_cases": len(ids),
+        "precision": round(float(precision), 6),
+        "recall": round(float(recall), 6),
+        "f1": round(float(f1), 6),
+    }
+
+
 def main():
     clean = load_clean()
 
@@ -72,6 +97,10 @@ def main():
     base = features(clean, negation=False)
     neg = features(clean, negation=True)
     sens = {"baseline": summarize(base), "negation": summarize(neg)}
+    sens["gold_micro"] = {
+        "baseline": gold_micro(base),
+        "negation": gold_micro(neg),
+    }
     sens["baseline"]["twfe"] = run_twfe(base)
     sens["negation"]["twfe"] = run_twfe(neg)
 

@@ -15,6 +15,10 @@ model during reproduction.
 The human overlap is the only set with a reference label. The random-draw labels are model
 silver labels used for robustness and prevalence checks.
 
+The frozen file contains classification and framework fields, not raw model responses,
+claim-level evidence quotations, the exact prompt wrapper, or truncation code. The offline
+workflow therefore reproduces majority voting and reported scores, not model inference.
+
 ## Verify
 
 From the repository root, after installation:

@@ -10,7 +10,7 @@ and it must not overlap the bounding box of any body glyph run.
 import re
 import sys
 
-import fitz
+import pymupdf as fitz
 
 CM = 72.0 / 2.54
 PAGE_W = 21.0 * CM          # a4

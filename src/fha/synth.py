@@ -138,5 +138,12 @@ def generate(n_cases=9000, year_min=2000, year_max=2023, seed=7):
     pd.DataFrame(rows).to_csv(housing, index=False)
     truth = {"BETA_TRUE": BETA_TRUE, "corpus": str(corpus),
              "housing_panel": str(housing)}
-    (config.PROCESSED / "_synth_truth.json").write_text(json.dumps(truth, indent=2))
+    stored_truth = {
+        **truth,
+        "corpus": str(corpus.relative_to(config.ROOT)),
+        "housing_panel": str(housing.relative_to(config.ROOT)),
+    }
+    (config.PROCESSED / "_synth_truth.json").write_text(
+        json.dumps(stored_truth, indent=2) + "\n", encoding="utf-8"
+    )
     return truth

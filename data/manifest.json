@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "description": "Frozen inputs used by the paper reproduction workflow.",
+  "files": [
+    {
+      "path": "data/external/housing_panel.csv",
+      "bytes": 1091,
+      "sha256": "ba532abdb121ff9542d08b46368215c557f3b43e5067d27bc37d61f39159d601"
+    },
+    {
+      "path": "data/processed/paper_corpus.jsonl",
+      "bytes": 21065188,
+      "sha256": "802015494aabf4330695d998d2792c155aefe9be99c8b27d61dd829a8e69167a"
+    },
+    {
+      "path": "data/raw/bulk_fha_cases.jsonl",
+      "bytes": 379068,
+      "sha256": "03cbd8193fcbbc8f945138e3e91dd76e70430c4753a2dd4bcdbc8f921060684f"
+    },
+    {
+      "path": "data/validation/CODEBOOK.md",
+      "bytes": 2167,
+      "sha256": "202047e9905562c02db4584b60e3c225e17af84ef2d5f8f7f92f6464d92bc64b"
+    },
+    {
+      "path": "data/validation/excluded_non_nos443.jsonl",
+      "bytes": 39162,
+      "sha256": "f0b6c5690ba10d2931678e1e64b3f890985539861f6bde835c177f116c9b8d17"
+    },
+    {
+      "path": "data/validation/gold_human_codings.json",
+      "bytes": 55473,
+      "sha256": "59a003f433b345e670bf4b5bad09b2c1b49e05d4d9845f5041884414e4fc9fa1"
+    },
+    {
+      "path": "data/validation/llm_labels_3pass.json",
+      "bytes": 171735,
+      "sha256": "30aedf022443b71a7897cdf389074d85cb40d6d8503d71d40ece9a18652f8a72"
+    },
+    {
+      "path": "data/validation/llm_majority_votes.json",
+      "bytes": 48714,
+      "sha256": "b2685378199704f9e661074167df6cbd49453ab64ffa65e2ad8f9c77ccae3cfa"
+    },
+    {
+      "path": "data/validation/random_sample_index.json",
+      "bytes": 1877,
+      "sha256": "dc51eb648432f661f34465b9ed9fc7bc3b030b2a9ebcb05cd34774eadd2bf563"
+    }
+  ]
+}

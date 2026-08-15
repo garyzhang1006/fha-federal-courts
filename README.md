@@ -11,16 +11,18 @@ proof framework with a character-offset evidence snippet behind every flag, and
 a frozen three-pass Claude Opus 4.8 baseline provides the comparison reported
 in the paper.
 
-Every number in the paper reproduces offline from this repository; see
-[REPRODUCING.md](REPRODUCING.md) for the claim-by-claim map. The paper source
-lives in [paper/](paper/).
+Mapped quantitative claims, every row of Tables 1--2, and all nine figures reproduce offline;
+see [REPRODUCING.md](REPRODUCING.md) for the audit map. Model inference itself
+is not rerun because the release contains frozen labels rather than raw model
+responses or the exact inference prompt. The paper source lives in [paper/](paper/).
 
 ## What the corpus shows
 
 Rule-based disparate-impact detection reaches precision 0.41, because the phrase
 fires on recitations, on citations, and on claims the court never reaches.
-Requiring an adjudicating quote lifts that to 1.00 without costing recall, which
-is the case for anchoring every flag to evidence rather than to a keyword.
+The frozen LLM labels lift that to 1.00 without costing recall. The released
+label artifact does not retain claim-level evidence quotations, so this result
+supports the comparison but not an audit of the model's stated rationale.
 
 | Measure | Regex | Frozen LLM |
 |---|---:|---:|
@@ -35,14 +37,16 @@ adjustment before it means anything.
 
 ## Setup
 
-Requires Python 3.11 or newer.
+Use Python 3.11, recorded in `.python-version`, with the locked dependencies:
 
 ```bash
 git clone https://github.com/garyzhang1006/fha-federal-courts.git
 cd fha-federal-courts
-python3 -m venv .venv
+python3.11 -m venv .venv
 source .venv/bin/activate
-python -m pip install -e ".[dev]"
+python -m pip install -r requirements-lock.txt
+python -m pip install --no-build-isolation --no-deps -e .
+python -m pip check
 ```
 
 ## Reproduce
@@ -54,9 +58,17 @@ The complete workflow is offline. The LLM labels used by the paper are frozen in
 make reproduce
 ```
 
-This runs the deterministic pipeline, validation checks, random-sample verification,
-frozen-LLM scoring, and prevalence correction. Generated tables and reports are written
-under ignored `data/processed/` and `outputs/` paths.
+This verifies frozen-input hashes, runs the test suite and deterministic analysis,
+checks the declared paper claims, and regenerates all nine figures. Generated tables,
+figures, and reports are written under ignored `data/processed/` and `outputs/` paths.
+
+Building the PDF also requires `latexmk`, BibTeX, and the LaTeX/font packages
+used by the ACL style. On Ubuntu, CI installs `texlive-latex-extra`,
+`texlive-fonts-recommended`, and `texlive-fonts-extra`. Build with:
+
+```bash
+make paper
+```
 
 To run individual checks:
 
@@ -74,7 +86,8 @@ used when the input frame is intentionally changed.
 
 - `src/fha/`: extraction, FEII, housing feasibility inputs, the LLM baseline, the cross-circuit doctrinal-split test, and the Schelling gatekeeping model. A released doctrinal-embedding module is included but not used in the sorting analysis.
 - `scripts/`: reproducible entry points used by `make reproduce`.
-- `data/`: frozen corpus, housing panel, human coding, codebook, and LLM artifacts.
+- `data/`: frozen full-text corpus, housing panel, human coding, codebook, LLM artifacts,
+  and SHA-256 manifest.
 - `docs/LLM_BASELINE.md`: provenance and verification details for the frozen LLM baseline.
 - `tests/`: offline regression tests.
 

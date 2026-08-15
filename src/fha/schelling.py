@@ -22,6 +22,8 @@ def _same_share(grid, row, col, kind=None):
     same_kind = 0
     for neighbor_row in range(r0, r1):
         for neighbor_col in range(c0, c1):
+            if neighbor_row == row and neighbor_col == col:
+                continue
             neighbor = grid[neighbor_row, neighbor_col]
             if neighbor >= 0:
                 occupied += 1

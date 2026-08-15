@@ -14,5 +14,6 @@ The default workflow uses only committed local files. `data/processed/*.csv` and
 | `validation/random_sample_index.json` | Seeded 150-case draw (`20260720`) |
 | `validation/llm_labels_3pass.json` | Frozen pass-level LLM labels |
 | `validation/llm_majority_votes.json` | Frozen majority votes and self-consistency |
+| `manifest.json` | Byte sizes and SHA-256 hashes for the nine frozen inputs |
 
 Run `make reproduce` from the repository root to rebuild derived files and reports.

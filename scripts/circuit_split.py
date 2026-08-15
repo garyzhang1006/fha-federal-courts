@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Per-circuit doctrinal prevalence and the cross-circuit split test (chi-square)."""
+import json
 import sys
 from pathlib import Path
 
@@ -25,7 +26,18 @@ def main():
     out = config.OUTPUTS / "paper" / "validation"
     out.mkdir(parents=True, exist_ok=True)
     prevalence.to_csv(out / "circuit_prevalence.csv", index=False)
+    serializable = {
+        construct: {
+            key: int(value) if key in ("dof", "n") else float(value)
+            for key, value in stats.items()
+        }
+        for construct, stats in split.items()
+    }
+    (out / "circuit_split.json").write_text(
+        json.dumps(serializable, indent=2) + "\n", encoding="utf-8"
+    )
     print(f"\nwrote {out / 'circuit_prevalence.csv'}")
+    print(f"wrote {out / 'circuit_split.json'}")
 
 
 if __name__ == "__main__":

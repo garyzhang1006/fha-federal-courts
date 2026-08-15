@@ -1,10 +1,11 @@
 import sys
 from pathlib import Path
 
+import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from fha.schelling import feii_reference, run_phase_sweep, simulate
+from fha.schelling import _same_share, feii_reference, run_phase_sweep, simulate
 
 
 def test_feii_reference_records_scale_without_circuit_mapping():
@@ -20,6 +21,15 @@ def test_seeded_schelling_run_is_bounded():
     assert 0.0 <= outcome["segregation"] <= 1.0
     assert 0 <= outcome["cross_group_admissions"] <= outcome["cross_group_attempts"]
     assert 1 <= outcome["steps"] <= 20
+
+
+def test_same_share_excludes_focal_household():
+    grid = np.array([[1, -1, -1], [-1, 0, 1], [-1, -1, -1]])
+    assert _same_share(grid, 1, 1) == 0.0
+
+    isolated = np.full((3, 3), -1)
+    isolated[1, 1] = 0
+    assert _same_share(isolated, 1, 1) == 0.5
 
 
 def test_phase_sweep_crosses_preference_and_access():

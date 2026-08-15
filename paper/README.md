@@ -1,17 +1,23 @@
 # Paper source
 
-ACL-format LaTeX for the NLLP 2026 submission. Build:
+ACL-format LaTeX for the NLLP 2026 submission. From repository root, build the
+analysis, nine figures, PDF, and ruler check with:
 
 ```bash
-latexmk -pdf -bibtex fha443.tex
+make paper
 ```
+
+This target requires `latexmk`, BibTeX, and the TeX Live LaTeX/font packages
+listed in `.github/workflows/reproduce.yml`. Tables 1--2 are generated under
+`outputs/paper_tables/` before LaTeX runs; all figure files come from
+`outputs/paper_figures/`.
 
 `\usepackage[review]{acl}` produces the anonymized, line-numbered review
 version; switch to `[final]` for camera-ready and restore the author block in
 `\author`. Nothing else changes between the two. The repository URL is written
 once as `\repowhere` and appears only when the paper is not anonymized, so the
-blind copy cannot leak it and the camera-ready cannot omit it. Figures are the
-released PNGs in `media/`.
+blind copy cannot leak it and the camera-ready cannot omit it. Paper figures are
+generated under `outputs/paper_figures/` by `scripts/make_paper_figures.py`.
 
 ## Line numbers
 

@@ -1,6 +1,1 @@
-numpy
-pandas
-scipy
-scikit-learn
-statsmodels
-pytest
+-r requirements-lock.txt

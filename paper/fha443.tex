@@ -52,7 +52,7 @@ accompanying this submission\else
 \maketitle
 
 \begin{abstract}
-Fair Housing Act cases are decided overwhelmingly in federal district courts, but computational work on the statute has followed the appellate record, and no trial-court corpus exists. We release FHA-443, a canonicalized corpus of 757 Nature of Suit 443 district-court opinion clusters, 751 with full text and 417 rule-positive and substantive. An evidence-anchored extractor labels five doctrinal constructs and the proof framework and attaches a character-offset snippet to every flag. We validate it against 93 blind hand-coded opinions and a frozen three-pass Claude Opus 4.8 baseline, 98.8\% unanimous across 1,215 claim decisions. Micro $F_1$ rises from 0.767 to 0.872 and framework accuracy from 0.774 to 0.914, and one construct drives the gain. Rule-based disparate-impact detection reaches precision 0.41 because it fires on recitations, citations, and claims the court never reaches; requiring an adjudicating quote lifts precision to 1.00 at unchanged recall. Refusal and steering defeat both extractors, at $F_1$ 0.67 and 0.61. The corrected labels overturn the raw reading of the docket: disparate treatment leads at 46.1\% against 13.2\% for disparate impact (exact McNemar $p<.0001$), and circuits diverge from 8\% to 54\% in impact language ($p<.001$), so any cross-circuit index must be case-mix adjusted. Corpus, extractor, prompts, and frozen labels are released in \repowhere.
+Fair Housing Act cases are decided overwhelmingly in federal district courts, but computational work on the statute has followed the appellate record, and no trial-court corpus exists. We release FHA-443, a canonicalized corpus of 757 Nature of Suit 443 district-court opinion clusters, 751 with full text and 417 rule-positive and substantive. An evidence-anchored extractor labels five doctrinal constructs and the proof framework and attaches character-offset snippets to its regex matches. We validate it against 93 blind hand-coded opinions and a frozen three-pass Claude Opus 4.8 baseline, 98.8\% unanimous across 1,215 claim decisions. Micro $F_1$ rises from 0.767 to 0.872 and framework accuracy from 0.774 to 0.914, with the largest gain in disparate impact. Rule-based disparate-impact detection reaches precision 0.41 because it fires on recitations, citations, and claims the court never reaches; the frozen model labels reach precision 1.00 at unchanged recall. Refusal and steering defeat both extractors, at $F_1$ 0.67 and 0.61. The corrected labels overturn the raw reading of the docket: disparate treatment leads at 46.1\% against 13.2\% for disparate impact (exact McNemar $p<.0001$), and circuits diverge from 8\% to 54\% in impact language ($p<.001$), so any cross-circuit index must be case-mix adjusted. Corpus, extractor, codebook, and frozen labels are released in \repowhere.
 \end{abstract}
 
 \section{Introduction}
@@ -61,7 +61,7 @@ Almost every Fair Housing Act dispute that reaches a federal judge is resolved b
 
 Building one is a legal information-extraction problem with a specific failure mode. A district-court opinion recites the governing standard for every theory it discusses, cites cases applying theories it will not reach, and disposes of most claims on procedural grounds. A keyword rule cannot tell a recitation from an adjudication, and the confusion is asymmetric: disparate impact has a canonical three-step recitation that appears in opinions deciding nothing about impact, while reasonable accommodation is usually named only when it is at issue. An extractor here has to separate what an opinion mentions from what it decides, and expose the evidence so the error can be found.
 
-We build that extractor and measure how far it gets. FHA-443 holds 757 canonicalized Nature of Suit 443 opinion clusters, 751 with full text and 417 rule-positive and substantive. A deterministic layer labels five doctrinal constructs and the proof framework, attaching a character offset and a snippet to every flag, and a frozen three-pass Claude Opus 4.8 baseline given the same codebook provides the comparison. Against 93 blind hand-coded opinions the model route is better on every aggregate measure, and the whole of that gain sits in one construct. Rule-based disparate-impact detection runs at precision 0.41 for exactly the reason above, and requiring an adjudicating quote lifts it to 1.00 without costing recall. Refusal and steering defeat both routes, which we read as heterogeneity in how courts describe the conduct rather than a limit of either method.
+We build that extractor and measure how far it gets. FHA-443 holds 757 canonicalized Nature of Suit 443 opinion clusters, 751 with full text and 417 rule-positive and substantive. A deterministic layer labels five doctrinal constructs and the proof framework, attaching character offsets and snippets to its matches, and a frozen three-pass Claude Opus 4.8 baseline given the same codebook provides the comparison. Against 93 blind hand-coded opinions the model route is better on every aggregate measure, with the largest gain in disparate impact. Rule-based disparate-impact detection runs at precision 0.41 for exactly the reason above, while the frozen model labels reach 1.00 without costing recall. Refusal and steering defeat both routes, which we read as heterogeneity in how courts describe the conduct rather than a limit of either method.
 
 Correcting the labels changes what the docket looks like. The rule system makes the three leading theories appear within ten points of one another. On a fresh random draw scored by the baseline, disparate treatment leads at 46.1\% against 22.4\% for accommodation and 13.2\% for impact, and the lead survives an exact McNemar test on paired within-case labels. Circuits split on the doctrine they apply, from 8\% impact language in the Tenth to 54\% in the Seventh, so a cross-circuit comparison that ignores case mix reports docket composition as enforcement.
 
@@ -71,11 +71,11 @@ The paper contributes three things. First, FHA-443, the first public corpus of f
 
 \section{Related Work}
 
-This work sits in the computational-social-science tradition that treats segregation as an emergent outcome of local rules, for which Schelling's dynamic model is the canonical account \citep{schelling1971} and the Black--White dissimilarity index the standard measure \citep{massey1988}. Our contribution places a measured legal signal upstream of that mechanism.
+This work sits in the computational-social-science tradition that treats segregation as an emergent outcome of local rules, for which Schelling's dynamic model is the canonical account \citep{schelling1971} and the Black--White dissimilarity index the standard measure \citep{massey1988}. Our contribution measures the legal signal and uses a separate scoping model to state one possible channel into that mechanism.
 
 On measurement we follow the text-as-data program, which recovers social quantities from large corpora while warning about selection, measurement error, and researcher-defined dictionaries \citep{grimmer2013}. Legal natural language processing supplies capable representations of judicial text \citep{chalkidis2019,chalkidis2020,guha2023}, but prediction accuracy and construct measurement are different goals. Recent work at this workshop reports the gap directly. Large models remain unstable and poorly calibrated to human interpretive judgments \citep{purushothama2025}, they underperform a domain-pretrained encoder on fine-grained legal argument types \citep{held2025}, and automated statute consolidation reaches high textual similarity while leaving legally significant errors \citep{prior2025}. Work that links platform policy text to enforcement decisions makes the same design choice we make, building a human gold standard and reporting where the automated link fails \citep{esser2025}. We therefore give every headline indicator a rule and an evidence offset, and cross-check it against a stronger extractor rather than trusting either route alone.
 
-On the legal side, appellate work documents variation in Fair Housing Act disparate-impact claims \citep{seicshnaydre2013}, and empirical-legal scholarship stresses the difficulty of causal inference in selected litigation \citep{ho2011,priest1984}. Litigated opinions are a selected sample of disputes, so we treat our shares as measurements of a defined retrieval, not of all housing conflict. Two gaps follow. No public corpus of federal district-court Fair Housing Act opinions exists, so the trial-level composition of asserted theories has never been measured. And no prior work places a measured legal-enforcement signal upstream of a Schelling mechanism. This paper closes the first and scopes the second.
+On the legal side, appellate work documents variation in Fair Housing Act disparate-impact claims \citep{seicshnaydre2013}, and empirical-legal scholarship stresses the difficulty of causal inference in selected litigation \citep{ho2011,priest1984}. Litigated opinions are a selected sample of disputes, so we treat our shares as measurements of a defined retrieval, not of all housing conflict. Two gaps follow. No public corpus of federal district-court Fair Housing Act opinions exists, so the trial-level composition of asserted theories has never been measured. And no prior work sets this measured legal-enforcement signal beside a Schelling access mechanism. This paper closes the first and scopes the second without estimating a link between them.
 
 \section{Data}
 
@@ -83,30 +83,30 @@ We build the corpus from CourtListener, the open-access case-law database mainta
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{media/image5.png}
+\includegraphics[width=\columnwidth]{../outputs/paper_figures/image5.png}
 \caption{Federal FHA opinion volume concentrates in recent years.}
 \label{fig:volume}
 \end{figure}
 
 We imported the opinion bulk dump into PostgreSQL, preserved source HTML, and mapped court identifiers to circuits with a hand-verified crosswalk, making the circuit a geographic aggregation key. We exclude the D.C.\ Circuit, which covers only the District of Columbia and hears mostly federal agency rather than regional housing cases, so it does not function as a geographic unit for the segregation linkage. The metadata pass produced 937 candidate rows, and exact NOS normalization retained 757 official or unambiguous NOS-443 rows, all district-court observations. Opinion volume concentrates in recent years (Figure~\ref{fig:volume}).
 
-Because NOS coding is a docketing convention rather than a merits label, canonical cases can mix incidental references with FHA decisions, and citations may appear in procedural history. The rule therefore requires 200 characters plus a core citation or corroborating claim or remedy evidence. Equation~\ref{eq:inclusion} is a high-recall selection frame within the retrieval; writing $L_i$ for text length, $N_i$ for the NOS code, $C_i$ for a core FHA citation, $A_i$ for an Act-name match, and $Q_i$ for the count of corroborating claim or remedy cues,
+Because NOS coding is a docketing convention rather than a merits label, canonical cases can mix incidental references with FHA decisions, and citations may appear in procedural history. The rule therefore requires 200 characters, exact NOS-443 normalization, and either a core citation or an Act-name match. Equation~\ref{eq:inclusion} is a high-recall selection frame within the retrieval; writing $L_i$ for text length, $N_i$ for the NOS code, $C_i$ for a core FHA citation, and $A_i$ for an Act-name match,
 \begin{equation}\label{eq:inclusion}
 \resizebox{0.89\columnwidth}{!}{$
-I_i = \mathbf{1}\{L_i \ge 200\}\cdot\mathbf{1}\{N_i = 443\}\cdot\mathbf{1}\{C_i \lor [A_i \land (Q_i \ge 2)]\}
+I_i = \mathbf{1}\{L_i \ge 200\}\cdot\mathbf{1}\{N_i = 443\}\cdot\mathbf{1}\{C_i \lor A_i\}
 $}
 \end{equation}
 Hand-coded validation evaluates downstream indicators, so 417 is a rule-positive denominator.
 
-Full text is recovered for 751 of 757 canonical clusters (99\%), and the remaining six lack retrievable text. The original 937-row snapshot and 180 excluded candidates remain in the repository, so the retained sample is this CourtListener district-court retrieval. The representativeness comparison concerns retrieval composition only. Section~\ref{sec:validation} and Table~\ref{tab:gold} report the hand-coded set and the construct-specific accuracy it supports.
+Full text is recovered for 751 of 757 canonical clusters (99\%), and the remaining six lack retrievable text. The 757 retained records and 180 excluded candidates in the repository reconstruct the 937-row candidate set, so the retained sample is this CourtListener district-court retrieval. The representativeness comparison concerns retrieval composition only. Section~\ref{sec:validation} and Table~\ref{tab:gold} report the hand-coded set and the construct-specific accuracy it supports.
 
 \section{Methods}
 
 \subsection{Structured legal-variable extraction}\label{sec:extraction}
 
-The task is multi-label span-grounded classification over a full opinion. The input is the text of one district-court opinion cluster. The output is a record with six binary construct labels, disparate treatment, disparate impact, refusal or steering, reasonable accommodation, exclusionary zoning, and an outcome cue, one categorical proof-framework label, and for every positive flag a character span and the quoted passage that licenses it. Labels are nonexclusive, because an opinion can adjudicate a duty and a course of conduct at once. The span requirement is what separates an opinion that recites a standard from one that applies it, and it is what makes a false positive findable by a reader rather than only by a second annotator.
+The task is multi-label classification over a full opinion with inspectable rule matches. The input is the text of one district-court opinion cluster. The output is a record with six binary construct labels, disparate treatment, disparate impact, refusal or steering, reasonable accommodation, exclusionary zoning, and an outcome cue, one categorical proof-framework label, and character spans with the passages that triggered deterministic matches. Labels are nonexclusive, because an opinion can adjudicate a duty and a course of conduct at once. A span does not itself separate recitation from application; it exposes the match so a reader can find that error rather than relying only on a second annotator.
 
-From each opinion, deterministic regex and lexicon rules create a structured legal record (Appendix~\ref{app:pipeline}). Each label names a doctrine, and the doctrine fixes what counts as a positive. Disparate treatment is intentional differential handling of a housing transaction, and at the trial level it is usually litigated through the burden-shifting structure of \citet{mcdonnell1973}. Disparate impact reaches a facially neutral practice through its effects, on the logic of \citet{griggs1971}, recognized under the Fair Housing Act in \citet{inclusive2015} and implemented by HUD in 2013 \citep{hud2013} and 2023 \citep{hud2023}. Reasonable accommodation is the disability-related duty in 42 U.S.C.\ \S~3604(f)(3)(B) \citep{fha1968}, so it can co-occur with either theory. Refusal or steering and exclusionary zoning describe conduct, by a private actor and by a municipality. The labels sit at three levels, proof, duty, and conduct, and the schema keeps them separate rather than forcing one winner per opinion. The evidence span exists to record whether an opinion applies a doctrine or only recites it, a live instance of the gap between the law as written and the law as applied \citep{pound1910}.
+From each opinion, deterministic regex and lexicon rules create a structured legal record (Appendix~\ref{app:pipeline}). Each label names a doctrine, and the doctrine fixes what counts as a positive. Disparate treatment is intentional differential handling of a housing transaction, and at the trial level it is usually litigated through the burden-shifting structure of \citet{mcdonnell1973}. Disparate impact reaches a facially neutral practice through its effects, on the logic of \citet{griggs1971}, recognized under the Fair Housing Act in \citet{inclusive2015} and implemented by HUD in 2013 \citep{hud2013} and 2023 \citep{hud2023}. Reasonable accommodation is the disability-related duty in 42 U.S.C.\ \S~3604(f)(3)(B) \citep{fha1968}, so it can co-occur with either theory. Refusal or steering and exclusionary zoning describe conduct, by a private actor and by a municipality. The labels sit at three levels, proof, duty, and conduct, and the schema keeps them separate rather than forcing one winner per opinion. Stored spans let readers audit whether a matched passage applies a doctrine or only recites it, a live instance of the gap between the law as written and the law as applied \citep{pound1910}.
 
 Snippets and character offsets support every flag, including an archived ``summary judgment'' match at offsets 1613--1629. We retain a negation-sensitive alternative for sensitivity analysis, while the headline run uses the unscoped rule. Outcome evidence is separate, and the outcome cue is null when cues are mixed or absent. Because the rules are deterministic, a reader can identify a false positive, revise a rule, and recompute the measure.
 
@@ -131,30 +131,23 @@ F_1 = \frac{2PR}{P+R}
 \toprule
 \textbf{Variable} & \textbf{P} & \textbf{R} & $\mathbf{F_1}$ & $\boldsymbol{\kappa}$ \\
 \midrule
-Disp.\ treatment & 0.910 & 0.720 & 0.804 & 0.60 \\
-Disp.\ impact & 0.407 & 0.917 & 0.564 & 0.47 \\
-Refusal to rent/sell & 0.731 & 0.613 & 0.667 & 0.52 \\
-Reasonable accomm. & 0.829 & 0.944 & 0.883 & 0.80 \\
-Exclusionary zoning & 0.800 & 0.800 & 0.800 & 0.76 \\
-\midrule
-Micro-average & 0.760 & 0.780 & 0.767 & 0.66 \\
-\bottomrule
+\input{../outputs/paper_tables/table1_gold_rows.tex}
 \end{tabular}
 \caption{Diagnostic extraction accuracy on the 93-case enriched, choice-based canonical-corpus overlap. Human coding is the reference; 30 cases carry a second pass; metrics are not population weighted; the micro-average pools decisions rather than averaging rows.}
 \label{tab:gold}
 \end{table}
 
-Accuracy varies across constructs (Table~\ref{tab:gold}). Disparate-impact detection recovers 0.92 of hand-coded positives at precision 0.41, so its $F_1$ of 0.56 suits screening while its false-positive rate limits direct prevalence claims. Framework accuracy is 0.77 ($\kappa=0.47$), holding-cue detection is 0.71/0.59/0.64, and binary agreement on 37 decisive cases is 0.81 ($\kappa=0.61$). The 30 double-coded cases show claim $\kappa=0.90$, framework $\kappa=0.86$, and four-way-winner $\kappa=0.73$.
+Accuracy varies across constructs (Table~\ref{tab:gold}). Disparate-impact detection recovers 0.92 of hand-coded positives at precision 0.41, so its $F_1$ of 0.56 suits screening while its false-positive rate limits direct prevalence claims. Framework accuracy is 0.77 ($\kappa=0.47$), holding-cue detection is 0.71/0.59/0.64, and binary agreement on 37 decisive cases is 0.81 ($\kappa=0.61$). Framework accuracy treats a single-framework prediction as compatible with a human \texttt{both} label; framework $\kappa$ excludes that case and is computed on the remaining four-class labels. The 30 double-coded cases show claim $\kappa=0.90$, framework $\kappa=0.86$, and four-way-winner $\kappa=0.73$.
 
 Negation scoping shifts headline shares by at most 2.40 points (Appendix~\ref{app:negation}); writing $\theta_j$ for the share of construct $j$,
 \begin{equation}\label{eq:negation}
 \Delta_j = \theta_j^{\text{scope}} - \theta_j^{\text{headline}}
 \end{equation}
-micro precision, recall, and $F_1$ remain 0.76, 0.78, and 0.77, and the treatment--impact ordering survives.
+micro precision, recall, and $F_1$ become 0.76, 0.75, and 0.76, and the treatment--impact ordering survives.
 
 \subsection{LLM baseline and error correction}\label{sec:llm}
 
-To test regex and lexicon behavior against a stronger extractor, we froze a Claude Opus 4.8 comparison. The model received the same human codebook and evidence-quote requirement used in annotation, and returned the five claim labels and the framework field in three independent passes; we report the majority vote. Across the 1,215 claim decisions on the overlap and draw, 98.8\% were unanimous. That figure records sampling stability under a fixed prompt, not agreement between independent coders. The run covers the 93-case human overlap and a uniform 150-case draw, seeded 20260720, from the 658 clusters outside the human set, with long opinions truncated head-and-tail. Of 729 requested passes, 728 returned, and the single two-pass case agreed on all six fields. One model at one setting measures what Opus 4.8 recovers, not a property of LLM extraction.
+To test regex and lexicon behavior against a stronger extractor, we froze a Claude Opus 4.8 comparison. The model was instructed with the released codebook and returned the five claim labels and the framework field in three independent passes; we report the majority vote. The released scoring artifact retains those labels but not raw responses or claim-level evidence quotations, so the offline workflow reproduces scoring from frozen outputs rather than model inference. Across the 1,215 claim decisions on the overlap and draw, 98.8\% were unanimous. That figure records sampling stability under one model run, not agreement between independent coders. The run covers the 93-case human overlap and a uniform 150-case draw, seeded 20260720, from the 658 clusters outside the human set. Of 729 requested passes, 728 returned, and the single two-pass case agreed on all six fields. One model at one setting measures what Opus 4.8 recovers, not a property of LLM extraction.
 
 \begin{table}[t]
 \centering\small
@@ -164,21 +157,13 @@ To test regex and lexicon behavior against a stronger extractor, we froze a Clau
 \textbf{Construct} & \textbf{Regex} & \textbf{LLM} & $\boldsymbol{\Delta F_1}$ \\
  & \scriptsize P/R/$F_1$ & \scriptsize P/R/$F_1$ & \\
 \midrule
-Disp.\ treatment & .907/.722/.804 & .867/.963/.912 & $+$.108 \\
-Disp.\ impact & .407/.917/.564 & 1.00/.917/.957 & $+$.393 \\
-Refusal/steering & .731/.613/.667 & .680/.548/.607 & $-$.060 \\
-Reas.\ accomm. & .829/.944/.883 & 1.00/.944/.971 & $+$.088 \\
-Excl.\ zoning & .800/.800/.800 & .833/1.00/.909 & $+$.109 \\
-\midrule
-Micro average & .757/.777/.767 & .872/.872/.872 & $+$.105 \\
-Framework acc. & \multicolumn{1}{c}{.774} & \multicolumn{1}{c}{.914} & $+$.140 \\
-\bottomrule
+\input{../outputs/paper_tables/table2_llm_rows.tex}
 \end{tabular}
 \caption{Regex and LLM extraction diagnostics on the 93-case human overlap, per construct. Every row reproduces from \texttt{make reproduce} in the released repository.}
 \label{tab:llm}
 \end{table}
 
-On the human overlap, LLM micro $F_1$ rises from 0.767 to 0.872 and framework accuracy from 0.774 to 0.914 (Table~\ref{tab:llm}). Disparate-impact precision rises from 0.407 to 1.000 at recall 0.917, and accommodation $F_1$ from 0.883 to 0.971. The rule detector fires on standard recitations, case citations, and claims the court does not reach, while the evidence-quote requirement forces a passage that adjudicates impact, removing those false positives at unchanged recall. Refusal or steering moves the other way, from $F_1$ 0.667 to 0.607, and is weak under both routes. The random draw contains 76 substantive cases. We compare its shares with the 417-case regex shares and a precision-recall correction, the observed share multiplied by precision and divided by recall. The draw provides a robustness check with model-generated labels, while calibration comes from the human overlap.
+On the human overlap, LLM micro $F_1$ rises from 0.767 to 0.872 and framework accuracy from 0.774 to 0.914 (Table~\ref{tab:llm}). Disparate-impact precision rises from 0.407 to 1.000 at recall 0.917, and accommodation $F_1$ from 0.883 to 0.971. The rule detector fires on standard recitations, case citations, and claims the court does not reach; the frozen model labels remove those false positives at unchanged recall. Because raw model evidence quotations are not retained, that mechanism cannot be audited from the released label file. Refusal or steering moves the other way, from $F_1$ 0.667 to 0.607, and is weak under both routes. The random draw contains 76 substantive cases. We compare its shares with the 417-case regex shares and a precision-recall correction, the observed share multiplied by precision and divided by recall. The draw provides a robustness check with model-generated labels, while calibration comes from the human overlap.
 
 \section{Results}
 
@@ -212,16 +197,16 @@ The new baseline changes the substantive reading. In the 150-case draw, 76 clust
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{media/image2.png}
+\includegraphics[width=\columnwidth]{../outputs/paper_figures/image2.png}
 \caption{The accommodation--impact gap needs roughly 300 substantive cases for nominal 80\% power.}
 \label{fig:power}
 \end{figure}
 
-The trial-court result is a treatment lead with a method-sensitive accommodation estimate. The precision-recall correction gives 47.2\% treatment, 31.2\% accommodation, 12.5\% impact, 28.3\% refusal, and 9.4\% zoning. The LLM draw and the correction are two independent error models, a stronger extractor on a fresh random draw and a measurement-error correction of the rule system (Figure~\ref{fig:corrections}). They agree on treatment, impact, and zoning, which is evidence the treatment lead is not an artifact of either route.
+The trial-court result is a treatment lead with a method-sensitive accommodation estimate. The precision-recall correction gives 47.3\% treatment, 31.2\% accommodation, 12.5\% impact, 28.3\% refusal, and 9.4\% zoning. The LLM draw and the correction are two independent error models, a stronger extractor on a fresh random draw and a measurement-error correction of the rule system (Figure~\ref{fig:corrections}). They agree on treatment, impact, and zoning, which is evidence the treatment lead is not an artifact of either route.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{media/image6.png}
+\includegraphics[width=\columnwidth]{../outputs/paper_figures/image6.png}
 \caption{Two independent corrections open a treatment lead over impact.}
 \label{fig:corrections}
 \end{figure}
@@ -232,7 +217,7 @@ Their divergence on accommodation and refusal marks where human coding would be 
 
 Circuits diverge in the doctrine they apply. Disparate-impact language appears in 8\% of substantive clusters in the Tenth Circuit but 54\% in the Seventh, and disparate treatment ranges from 11\% to 61\%. The differences exceed sampling noise (impact $\chi^2=30.5$, $df=10$, $p=.0007$, Cram\'er's $V=0.27$; treatment $\chi^2=27.6$, $p=.0021$). The split echoes the appellate divergence \citet{seicshnaydre2013} documents. It also matters for the sorting question: the legal signal a household faces depends on which circuit governs, so the access channel is itself geographic. Per-circuit samples are small (18 to 67 clusters), so we read the split as a measured divergence, not a ranking of individual circuits.
 
-Because circuits differ in claim mix, a raw enforcement ranking conflates doctrine with docket composition. Raw and case-mix-adjusted circuit ranks correlate only 0.14, and the ordering shifts under reweighting, so case-mix adjustment is a requirement rather than a refinement for any cross-circuit index. Appendix~\ref{app:feii} reports the index components by circuit, which show that a circuit high on opinion volume need not rank high on remedy-cue intensity.
+Because circuits differ in claim mix, a raw enforcement ranking conflates doctrine with docket composition. Raw and case-mix-adjusted circuit ranks correlate only 0.14, and the ordering shifts under reweighting, so case-mix adjustment is a requirement rather than a refinement for any cross-circuit index. Appendix~\ref{app:feii} defines the components and plots the resulting circuit-year composite.
 
 \subsection{Outcome cues}
 
@@ -240,7 +225,7 @@ Of 417 substantive clusters, 53 (12.7\%) contain a clear directional cue, and am
 
 \subsection{What the scoping model rules out}
 
-The corpus cannot say whether the measured signal reaches housing, because the legal and housing series overlap in one year. A stylized Schelling sweep settles the narrower question of whether the channel is available at all, and the answer is conditional. Where the preference threshold is low, raising access lowers the mean same-type neighbour share from 0.680 to 0.605. Where it is high enough to exclude cross-group moves, access changes nothing. The preference rule therefore bounds what legal access can do, which makes the legal signal, the preference rule, and their interaction the three quantities a later identified design must measure together. This is a property of the model and not a finding about American housing. Appendix~\ref{app:scoping} gives the specification and the sweep.
+The corpus cannot say whether the measured signal reaches housing, because the legal and housing series overlap in one year. A stylized Schelling sweep settles the narrower question of whether the channel is available at all, and the answer is conditional. Where the preference threshold is low, raising access lowers the mean same-type neighbour share from 0.778 to 0.723. At $\tau=.30$, many cross-group moves pass both gates but the final same-type share remains near 0.85; at $\tau=.45$, no cross-group move clears the preference rule. The preference rule therefore bounds what legal access can do, which makes the legal signal, the preference rule, and their interaction the three quantities a later identified design must measure together. This is a property of the model and not a finding about American housing. Appendix~\ref{app:scoping} gives the specification and the sweep.
 
 \section{Discussion}
 
@@ -252,20 +237,20 @@ Circuit rankings shift sharply once case mix is held constant (Figure~\ref{fig:c
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{media/image7.png}
+\includegraphics[width=\columnwidth]{../outputs/paper_figures/image7.png}
 \caption{Circuit rankings shift sharply after case-mix adjustment.}
 \label{fig:casemix}
 \end{figure}
 
-Separating the legal signal, cross-group access, and the household preference rule keeps each layer available to a design that can identify a housing effect, which is what places a measured institutional signal upstream of a segregation mechanism. The released schema records evidence for proof, duty, conduct, framework, remedy, and outcome-cue indicators. The release also includes an unsupervised embedding of the reasoning text (TF--IDF, latent semantic analysis \citep{deerwester1990}, and $k$-means \citep{lloyd1982}) that recovers coarse textual structure but does not enter the sorting analysis.
+Separating the measured legal signal from the swept access and household-preference parameters shows what a later design would have to link before identifying a housing effect. The released schema records evidence for proof, duty, conduct, framework, remedy, and outcome-cue indicators. The release also includes code for a full-opinion TF--IDF and latent-semantic representation \citep{deerwester1990} with derived $k$-means regime labels \citep{lloyd1982}; those labels do not enter the sorting analysis.
 
 A later design would measure legal exposure, the household preference rule, and their interaction directly, using human coding of the random sample, non-overlapping housing outcomes, district-level legal units, and event studies around discrete circuit changes \citep{goodmanbacon2021,roth2022,sunabraham2021} with few-cluster inference \citep{cameron2008,mackinnon2018}.
 
-Everything needed to rebuild the numbers above is in \repowhere, and one command rebuilds them: \texttt{make reproduce} runs the pipeline, the gold-set scoring, the frozen-LLM comparison, the prevalence correction, the circuit split, and the model sweep offline, with no API call. The archive holds the 937 candidate records and 180 exclusions, the canonical cluster identifiers, the extraction rules with their lexicons, the annotation codebook, the 93 human labels with the 30-case second pass, the frozen prompt, the three per-pass label sets from the Opus 4.8 run, and the draw seed 20260720. We release identifiers and derived labels rather than opinion text, and the retrieval script reconstructs the text from CourtListener. Model outputs are from a single frozen checkpoint and a fixed prompt; the prompt, the truncation rule, and the pass count are in the release so the run can be repeated or replaced with a different model. The pipeline runs nine ordered stages and records inputs and exclusions at each (Appendix~\ref{app:pipeline}). A closing check rebuilds the tables printed here from those outputs and compares every number the paper states against the value the code produces, failing the build when the two disagree, so a change to the pipeline cannot leave a stale figure standing in the text. Results hold at their defined levels: 417 clusters for textual composition, 76 random-draw cases for the LLM comparison, 93 overlap cases for construct diagnostics, and eight one-year cells for feasibility.
+Everything needed to rebuild the reported analyses from frozen model outputs is in \repowhere. \texttt{make reproduce} verifies SHA-256 hashes for nine frozen inputs, runs the tests and analysis stages, regenerates all nine figures, and audits the mapped quantitative claims offline. The archive's 757 retained records and 180 exclusions reconstruct the 937-row candidate set; it also holds a frozen full-text snapshot of 751 opinions, the extraction rules with their lexicons, the annotation codebook, 120 primary human labels (93 overlapping the corpus) with a 30-case second pass, the three per-pass label sets from the Opus 4.8 run, and the draw seed 20260720. The exact model prompt, truncation implementation, raw responses, and evidence quotations are not in the release, so model inference itself is not reproduced. A pinned Python 3.11 dependency file and continuous-integration workflow test the computational path; \texttt{make paper} compiles the PDF from generated tables and figures. The closing audit checks every declared claim in its machine-readable map and all rows of Tables~\ref{tab:gold} and~\ref{tab:llm}, failing on an unchecked or disagreeing value. Results hold at their defined levels: 417 clusters for textual composition, 76 random-draw cases for the LLM comparison, 93 overlap cases for construct diagnostics, and eight one-year cells for feasibility.
 
 \section{Conclusion}
 
-FHA-443 makes the federal trial-level Fair Housing Act docket measurable, and measuring it changes what the docket looks like. Rule-based extraction makes the three leading theories appear nearly tied; an extractor required to quote the adjudicating passage puts disparate treatment clearly first and cuts disparate-impact false positives to zero on the human overlap. Refusal and steering remain unsolved under both routes, which is the open problem this corpus hands to the next paper. Circuits split on the doctrine they apply, so a cross-circuit index built on this text has to be case-mix adjusted. We release the corpus, the extractor, the codebook, and the labels, and we defer the housing question to a design that can measure legal exposure, household preferences, and access together.
+FHA-443 makes the federal trial-level Fair Housing Act docket measurable, and measuring it changes what the docket looks like. Rule-based extraction makes the three leading theories appear nearly tied; the frozen model labels put disparate treatment clearly first and cut disparate-impact false positives to zero on the human overlap. Refusal and steering remain unsolved under both routes, which is the open problem this corpus hands to the next paper. Circuits split on the doctrine they apply, so a cross-circuit index built on this text has to be case-mix adjusted. We release the corpus, the extractor, the codebook, and the labels, and we defer the housing question to a design that can measure legal exposure, household preferences, and access together.
 
 \section*{Limitations}
 
@@ -281,7 +266,7 @@ The housing question that motivated the corpus stays open. Legal and housing cov
 
 \section*{Ethics statement}
 
-The corpus consists of published federal court opinions, which are public records and carry no expectation of privacy. Party names appear in the source text as the courts published them. We redistribute opinion identifiers and derived labels rather than re-hosting opinion text, and the retrieval script reconstructs the text from CourtListener under that project's terms.
+The corpus consists of published federal court opinions, which are public records and carry no expectation of privacy. Party names appear in the source text as the courts published them. The release includes the frozen opinion text used by the offline pipeline, along with identifiers and derived labels; downstream users remain responsible for CourtListener's terms and any later source corrections.
 
 The subject matter is litigation over protected characteristics, and the labels we release describe what a court discussed, not whether discrimination occurred. A positive disparate-treatment flag records that an opinion adjudicated a treatment theory. It does not record that a defendant discriminated, and it does not record that a plaintiff was wronged. We name this because an extractor of this kind is exactly the sort of artifact that gets reused as a scoreboard for jurisdictions, judges, or parties, and the measurement will not carry that weight. Per-circuit samples are as small as 18 clusters, outcome cues appear in 12.7\% of substantive opinions, and the directional cue records language rather than a plaintiff-win rate.
 
@@ -313,7 +298,7 @@ The pipeline measures Fair Housing Act legal signals from federal district-court
 
 Three analytic scales apply. The opinion cluster, one district-court decision, is the measurement unit, and clusters can share a docket rather than mapping to filings. Circuit geography aggregates the 11 numbered circuits, none in the District of Columbia. The housing feasibility cell is a circuit-vintage merge with eight substantive matches, all in 2022. No appellate corpus or circuit-court doctrine is claimed. Per-opinion variables store snippets and character offsets, with the outcome cue null when cues are mixed or absent. Legal-signal breadth is a descriptive output, not an index component.
 
-One deterministic forward pass runs nine ordered stages, each consuming the prior stage's output without feedback: harvest and identify from CourtListener bulk data with the excluded-candidate audit preserved; identify substantive FHA by the deterministic rule of Equation~\ref{eq:inclusion}; extract variables with evidence spans; aggregate the enforcement index; merge housing feasibility inputs; check estimability, recording an insufficient-panel note and fitting no real-data panel model; run validation diagnostics; run the frozen LLM baseline; and sweep the gatekeeping scenarios on a seeded grid. Stochasticity is seeded throughout. After the ninth stage, a table builder reads the written outputs, emits the tables reported above, and asserts each headline number against the paper, exiting non-zero on any disagreement. A released breadth score,
+One deterministic forward pass begins from the hash-verified full-text snapshot: identify substantive FHA by the rule of Equation~\ref{eq:inclusion}; extract variables with evidence spans; aggregate the enforcement index; merge housing feasibility inputs; check estimability, recording an insufficient-panel note and fitting no real-data panel model; run validation diagnostics; rescore the frozen LLM labels; sweep the gatekeeping scenarios on a seeded grid; and regenerate the figures and claim audit. Stochasticity is seeded throughout. The claim builder reads the written outputs, emits machine-readable audit tables, and checks every declared headline value, exiting non-zero on an unchecked or disagreeing claim. A released breadth score,
 \begin{equation*}
 \resizebox{0.89\columnwidth}{!}{$
 s = \min(1,\; .35\,\mathrm{DI} + .25\,\mathrm{HUD} + .20\,\mathrm{RA} + .10\,\mathrm{prec} + .10\,\mathrm{fw})
@@ -349,37 +334,37 @@ where $n_{ct}$ is opinion volume, $S_{ct}$ the directional outcome-cue rate, and
 \begin{equation}\label{eq:remedy}
 R_{ct} = \frac{1}{n_{ct}}\sum_i r_i .
 \end{equation}
-Equivalently, $\mathrm{FEII}_{ct} = \sum_k w_k\, z(X^k_{ct})$ over the three components with $w_k = \tfrac{1}{3}$. We weight equally because no external enforcement label exists against which to fit weights; a data-driven weighting would encode an unsupported ranking, and the released components let a user reweight or drop a channel. The outcome-cue rate is empirical-Bayes shrunk with pseudo-count $k=4$, since a circuit-year holding two or three resolved cases would otherwise swing between 0 and 1. Component values by circuit are shown in Figure~\ref{fig:feii}; a circuit high on opinion volume need not rank high on remedy-cue intensity or outcome direction.
+Equivalently, $\mathrm{FEII}_{ct} = \sum_k w_k\, z(X^k_{ct})$ over the three components with $w_k = \tfrac{1}{3}$. We weight equally because no external enforcement label exists against which to fit weights; a data-driven weighting would encode an unsupported ranking, and the released components let a user reweight or drop a channel. The outcome-cue rate is empirical-Bayes shrunk with pseudo-count $k=4$, since a circuit-year holding two or three resolved cases would otherwise swing between 0 and 1. Composite values by circuit-year are shown in Figure~\ref{fig:feii}; a circuit high on opinion volume need not rank high on remedy-cue intensity or outcome direction.
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=\columnwidth]{media/image4.png}
-\caption{Circuit enforcement-index components as standardized deviations.}
+\includegraphics[width=\columnwidth]{../outputs/paper_figures/image4.png}
+\caption{Circuit-year FEII as a standardized composite.}
 \label{fig:feii}
 \end{figure}
 
 \section{The scoping model}\label{app:scoping}
 
-The model initializes a $20\times20$ Moore-neighborhood grid with two equally sized groups and 10\% vacancies. An agent accepts a vacant cell only when its same-type neighbor share meets a preference threshold $\tau$. Unsatisfied agents and a 4\% turnover draw seek new cells, and a separate gatekeeping rule can block a cross-group move that otherwise meets $\tau$ (Figure~\ref{fig:gates}):
+The model initializes a $20\times20$ Moore-neighborhood grid with two equally sized groups and 10\% vacancies. An agent accepts a vacant cell only when its same-type neighbor share, excluding the focal household, meets a preference threshold $\tau$. Unsatisfied agents and a 4\% turnover draw seek new cells, and a separate gatekeeping rule can block a cross-group move that otherwise meets $\tau$ (Figure~\ref{fig:gates}):
 \begin{equation}\label{eq:access}
 \resizebox{0.89\columnwidth}{!}{$
 \Pr(\text{denial}\mid\text{cross-group move}) = g(1-e),\quad e \in \{.15,.325,.50,.675,.85\},\ g=.80
 $}
 \end{equation}
-We sweep $\tau$ and the access level $e$ independently, using the observed circuit-mean index span as legal context for the five access scenarios, and run 250 update cycles and 40 replications per cell with a fixed seed.
+We sweep $\tau$ and the access parameter $e$ independently and run 250 update cycles and 40 replications per cell with a fixed seed. The observed circuit-mean FEII span is recorded as reference metadata only; no mapping from FEII to $e$ is estimated. Because denial probability is $g(1-e)$, $e$ is a monotone access parameter rather than the realized admission probability.
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.86\columnwidth]{media/image18.png}
+\includegraphics[width=0.86\columnwidth]{../outputs/paper_figures/image18.png}
 \caption{Two sequential gates: a preference threshold $\tau$, then a cross-group access barrier.}
 \label{fig:gates}
 \end{figure}
 
-At $\tau=0.20$, the mean same-type neighbor share falls from 0.680 at access 0.15 to 0.605 at 0.85. At $\tau=0.30$ it falls from 0.797 to 0.752, a smaller drop, because the higher threshold admits fewer cross-group moves. At $\tau=0.45$ no cross-group move clears the threshold and the share stays near 0.90, so widening access changes nothing (Figure~\ref{fig:surface}). The asymmetry is a property of the model, not a finding about American housing: access moves sorting only where the preference rule permits cross-group moves, so the preference rule bounds the effect legal access can have.
+At $\tau=0.20$, the mean same-type neighbor share falls from 0.778 at access 0.15 to 0.723 at 0.85. At $\tau=0.30$ it stays near 0.85, and at $\tau=0.45$ no cross-group move clears the threshold while the share stays near 0.92 (Figure~\ref{fig:surface}). The asymmetry is a property of the model, not a finding about American housing: access moves sorting only where the preference rule permits cross-group moves, so the preference rule bounds the effect legal access can have.
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=\columnwidth]{media/image3.png}
+\includegraphics[width=\columnwidth]{../outputs/paper_figures/image3.png}
 \caption{Access lowers segregation only when preference thresholds stay low.}
 \label{fig:surface}
 \end{figure}
@@ -409,7 +394,7 @@ Disparate treatment & $-2.40$ \\
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=\columnwidth]{media/image12.png}
+\includegraphics[width=\columnwidth]{../outputs/paper_figures/image12.png}
 \caption{Claim composition shifts toward accommodation across eras.}
 \label{fig:era}
 \end{figure}
@@ -418,14 +403,14 @@ Disparate treatment & $-2.40$ \\
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.9\columnwidth]{media/image9.png}
-\caption{FHA measurement and inference pipeline.}
+\includegraphics[width=0.9\columnwidth]{../outputs/paper_figures/image9.png}
+\caption{FHA measurement and feasibility pipeline.}
 \label{fig:pipeline}
 \end{figure}
 
 \section{Annotation codebook}\label{app:codebook}
 
-Human coders and the LLM baseline received the same instructions, reproduced in condensed form here; the release carries them verbatim. The core rule is scoping: code what the opinion itself adjudicates or substantively discusses as an asserted FHA theory, and never code a claim because a phrase appears in a string-cited case name, a quoted statute, or procedural history. Every positive label requires a short verbatim quote from the opinion, and every judgment rests on the opinion text alone.
+The released codebook gives the instructions used for human coding and supplied to the LLM baseline. The core rule is scoping: code what the opinion itself adjudicates or substantively discusses as an asserted FHA theory, and never code a claim because a phrase appears in a string-cited case name, a quoted statute, or procedural history. The instructions require a short verbatim quote for every positive label, but the released human and model label files retain classifications rather than claim-level quotations; those quotations therefore cannot be audited from the frozen outputs.
 
 The five claim labels are binary and not mutually exclusive. \emph{Disparate treatment} is intentional discrimination because of a protected characteristic: differential terms or treatment, pretext analysis, or discriminatory animus, often though not always analyzed under McDonnell Douglas. \emph{Disparate impact} is a facially neutral policy challenged for its discriminatory effect and requires effects-based reasoning such as statistics, robust causality, or the HUD three-step framework; the codebook forbids coding it from a citation, a legal-standard recitation, or a claim the court declines to reach, which is exactly the failure mode Section~4.4 measures in the regex route. \emph{Refusal or steering} covers refusal to rent, sell, or negotiate, steering, and misrepresented availability under \textsection~3604(a) and (d). \emph{Reasonable accommodation} is the disability-based duty of \textsection~3604(f)(3)(A)--(B), including failure-to-accommodate and interactive-process disputes. \emph{Exclusionary zoning} covers municipal land use, permitting, occupancy limits, and siting decisions challenged as discriminatory.
 

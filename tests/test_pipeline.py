@@ -1,4 +1,5 @@
 import sys
+import json
 from pathlib import Path
 
 import pandas as pd
@@ -8,8 +9,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from fha import reference as ref
 from fha.classify import rule_is_fha
-from fha.extract import extract_case
-from fha import synth, feii, econometrics as ec
+from fha.extract import extract_case, extract_outcomes
+from fha import config, synth, feii, econometrics as ec
 from fha.extract import extract_corpus
 
 
@@ -57,10 +58,23 @@ def test_extract_case_claims_and_outcome():
     assert 0 <= row["doctrinal_strictness"] <= 1
 
 
+def test_outcome_evidence_uses_full_opinion_offsets():
+    cue = "Judgment is entered in favor of the plaintiff."
+    text = cue + " neutral background" * 300
+    result = extract_outcomes(text)
+    evidence = json.loads(result["outcome_evidence"])["plaintiff"]
+    assert result["outcome_cue"] == 1
+    assert evidence
+    assert evidence[0]["start"] == 0
+    assert text[evidence[0]["start"]:evidence[0]["end"]] == evidence[0]["text"]
+
+
 def test_twfe_recovers_true_beta():
     truth = synth.generate(n_cases=4000, seed=11)
+    stored = json.loads((config.PROCESSED / "_synth_truth.json").read_text())
+    assert stored["corpus"] == "data/raw/synthetic_corpus.jsonl"
+    assert stored["housing_panel"] == "data/external/synthetic_housing_panel.csv"
     hp = pd.read_csv(truth["housing_panel"])
-    import json
     recs = [json.loads(l) for l in open(truth["corpus"])]
     feat = extract_corpus(recs)
     pf = feii.aggregate(feat, unit="circuit")
@@ -72,7 +86,6 @@ def test_twfe_recovers_true_beta():
 
 def test_feii_is_standardized():
     truth = synth.generate(n_cases=2000, seed=3)
-    import json
     recs = [json.loads(l) for l in open(truth["corpus"])]
     pf = feii.aggregate(extract_corpus(recs), unit="circuit")
     assert abs(pf["FEII"].mean()) < 1e-6

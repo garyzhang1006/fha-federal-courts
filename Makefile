@@ -1,28 +1,41 @@
-.PHONY: test pipeline validation llm schelling reproduce clean
+.NOTPARALLEL: reproduce
+.PHONY: inputs test pipeline validation llm schelling figures paper-tables paper reproduce clean
+
+PYTHON ?= python3
+
+inputs:
+	$(PYTHON) scripts/check_inputs.py
 
 test:
-	PYTHONPATH=src python3 -m pytest -q
+	PYTHONPATH=src $(PYTHON) -m pytest -q
 
-pipeline:
-	python3 scripts/run_pipeline.py
+pipeline: inputs
+	$(PYTHON) scripts/run_pipeline.py
 
-validation:
-	python3 scripts/score_goldset.py
-	python3 scripts/validation_robustness.py
-	python3 scripts/draw_random_sample.py
-	python3 scripts/circuit_split.py
+validation: inputs
+	$(PYTHON) scripts/score_goldset.py
+	$(PYTHON) scripts/validation_robustness.py
+	$(PYTHON) scripts/draw_random_sample.py
+	$(PYTHON) scripts/circuit_split.py
 
-llm:
-	python3 scripts/score_llm_baseline.py
-	python3 scripts/analyze_prevalence.py
+llm: inputs
+	$(PYTHON) scripts/score_llm_baseline.py
+	$(PYTHON) scripts/analyze_prevalence.py
 
 paper-tables:
-	python3 scripts/make_paper_tables.py
+	$(PYTHON) scripts/make_paper_tables.py
 
 schelling: pipeline
-	python3 scripts/run_schelling.py
+	$(PYTHON) scripts/run_schelling.py
 
-reproduce: pipeline validation llm schelling paper-tables
+figures: validation llm schelling
+	$(PYTHON) scripts/make_paper_figures.py
+
+paper: figures paper-tables
+	cd paper && latexmk -pdf -bibtex -interaction=nonstopmode -halt-on-error fha443.tex
+	$(PYTHON) paper/check_rulers.py paper/fha443.pdf
+
+reproduce: inputs test pipeline validation llm schelling figures paper-tables
 
 clean:
 	rm -rf outputs data/processed/case_features.csv data/processed/analysis_panel.csv \
