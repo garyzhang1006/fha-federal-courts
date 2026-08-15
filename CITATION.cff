@@ -6,7 +6,6 @@ authors:
 version: 1.0.0
 date-released: "2026-01-01"
 year: 2026
-license: MIT
 type: software
 abstract: >-
   Reproducible Fair Housing Act district-court corpus and deterministic text

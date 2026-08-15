@@ -91,6 +91,6 @@ used when the input frame is intentionally changed.
 - `docs/LLM_BASELINE.md`: provenance and verification details for the frozen LLM baseline.
 - `tests/`: offline regression tests.
 
-## License
+## Citation
 
-MIT. See `CITATION.cff` for citation metadata.
+See `CITATION.cff`. A license will be attached at camera-ready.
