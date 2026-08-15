@@ -1,0 +1,16 @@
+__pycache__/
+.DS_Store
+*.py[cod]
+.pytest_cache/
+.venv/
+build/
+dist/
+*.egg-info/
+outputs/
+*.log
+*.docx
+config/
+data/raw/synthetic_corpus.jsonl
+data/external/synthetic_housing_panel.csv
+data/processed/_synth_truth.json
+data/processed/*.csv
