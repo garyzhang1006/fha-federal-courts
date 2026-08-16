@@ -7,16 +7,15 @@ District-Court Opinions* (under review, NLLP 2026).
 FHA-443 holds 937 candidate records, 757 canonicalized Nature of Suit 443
 district-court opinion clusters, 751 with full text, and 417 rule-positive
 substantive clusters. The extractor labels five doctrinal constructs and the
-proof framework with a character-offset evidence snippet behind every flag, and
+proof framework, attaching character offsets and snippets to its matches, and
 a frozen three-pass Claude Opus 4.8 baseline provides the comparison reported
 in the paper. A stored span exposes a match for inspection; it does not by
 itself separate a recitation from an adjudication.
 
-Mapped quantitative claims and every row of Tables 1--2 reproduce offline, as do
-six of the paper's ten figures; the other four are committed assets;
+Mapped quantitative claims and every row of Tables 1--2 reproduce offline;
 see [REPRODUCING.md](REPRODUCING.md) for the audit map. Model inference itself
 is not rerun because the release contains frozen labels rather than raw model
-responses or the exact inference prompt. The paper source lives in [paper/](paper/).
+responses or the exact inference prompt.
 
 ## What the corpus shows
 
@@ -41,9 +40,9 @@ adjustment before it means anything.
 
 Use Python 3.11, recorded in `.python-version`, with the locked dependencies:
 
+From the repository root:
+
 ```bash
-git clone https://github.com/garyzhang1006/fha-federal-courts.git
-cd fha-federal-courts
 python3.11 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements-lock.txt
@@ -54,23 +53,17 @@ python -m pip check
 ## Reproduce
 
 The complete workflow is offline. The LLM labels used by the paper are frozen in
-`data/validation/`; reproduction does not make an API call.
+`data/validation/`; reproduction does not make an API call. That directory also
+carries the open-weight comparison labels, produced by relabelling the same
+93-case human overlap with qwen3:32b at full opinion length, and
+`scripts/run_local_llm.py` is the harness that produced them.
 
 ```bash
 make reproduce
 ```
 
-This verifies frozen-input hashes, runs the test suite and deterministic analysis,
-checks the declared paper claims, and regenerates the six generated figures. Generated tables,
-figures, and reports are written under ignored `data/processed/` and `outputs/` paths.
-
-Building the PDF also requires `latexmk`, BibTeX, and the LaTeX/font packages
-used by the ACL style. On Ubuntu, CI installs `texlive-latex-extra`,
-`texlive-fonts-recommended`, and `texlive-fonts-extra`. Build with:
-
-```bash
-make paper
-```
+This verifies frozen-input hashes, runs the test suite and deterministic analysis and
+checks the declared paper claims. Generated tables and reports are written under ignored `data/processed/` and `outputs/` paths.
 
 To run individual checks:
 
@@ -88,11 +81,11 @@ used when the input frame is intentionally changed.
 
 - `src/fha/`: extraction, FEII, housing feasibility inputs, the LLM baseline, the cross-circuit doctrinal-split test, and the Schelling gatekeeping model. A released doctrinal-embedding module is included but not used in the sorting analysis.
 - `scripts/`: reproducible entry points used by `make reproduce`.
-- `data/`: frozen full-text corpus, housing panel, human coding, codebook, LLM artifacts,
-  and SHA-256 manifest.
+- `data/`: frozen full-text corpus, housing panel, human coding, codebook, LLM
+  artifacts including the open-weight comparison labels, and SHA-256 manifest.
 - `docs/LLM_BASELINE.md`: provenance and verification details for the frozen LLM baseline.
 - `tests/`: offline regression tests.
 
 ## Citation
 
-See `CITATION.cff`. A license will be attached at camera-ready.
+See `CITATION.cff`.

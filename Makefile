@@ -1,5 +1,5 @@
 .NOTPARALLEL: reproduce
-.PHONY: inputs test pipeline validation llm schelling figures paper-tables paper reproduce clean
+.PHONY: inputs test pipeline validation llm schelling figures paper-tables reproduce clean
 
 PYTHON ?= python3
 
@@ -30,11 +30,6 @@ schelling: pipeline
 
 figures: validation llm schelling
 	$(PYTHON) scripts/make_paper_figures.py
-	$(PYTHON) scripts/make_paper_figures_house.py
-
-paper: figures paper-tables
-	cd paper && latexmk -pdf -bibtex -interaction=nonstopmode -halt-on-error fha443.tex
-	$(PYTHON) paper/check_rulers.py paper/fha443.pdf
 
 reproduce: inputs test pipeline validation llm schelling figures paper-tables
 

@@ -1,4 +1,4 @@
-name: Reproduce paper outputs
+name: Reproduce analysis outputs
 
 on:
   push:
@@ -20,19 +20,12 @@ jobs:
           python -m pip install -r requirements-lock.txt
           python -m pip install --no-build-isolation --no-deps -e .
           python -m pip check
-      - name: Install paper toolchain
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y latexmk texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra
       - name: Reproduce and verify
         run: make reproduce PYTHON=python
-      - name: Build and inspect PDF
-        run: make paper PYTHON=python
-      - name: Upload paper outputs
+      - name: Upload analysis outputs
         uses: actions/upload-artifact@v4
         with:
-          name: fha-paper-outputs
+          name: fha-analysis-outputs
           path: |
             outputs/
             data/processed/*.csv
-            paper/fha443.pdf

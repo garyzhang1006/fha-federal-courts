@@ -23,3 +23,4 @@ data/processed/_synth_truth.json
 data/processed/*.csv
 _texbuild/
 paper/media/*_orig_backup.png
+paper/

@@ -1,8 +1,8 @@
 # Reproducing the paper analyses
 
 The paper is *FHA-443: An Evidence-Anchored Corpus and Extractor for Fair
-Housing Act Doctrine in U.S. District-Court Opinions*. The 71-claim audit map,
-every row of Tables 1--2, and six of the paper's ten figures reproduce offline from frozen inputs. No API
+Housing Act Doctrine in U.S. District-Court Opinions*. The 71-claim audit map and
+every row of Tables 1--2 reproduce offline from frozen inputs. No API
 call is made. The workflow rescored frozen LLM labels; it does not rerun model
 inference because raw responses and the exact inference prompt are not released.
 
@@ -11,12 +11,8 @@ python3.11 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements-lock.txt
 python -m pip install --no-build-isolation --no-deps -e .
-make reproduce          # hashes + tests + analysis + claim audit + figures
-make paper              # regenerate figures, compile PDF, check line rulers
+make reproduce          # hashes + tests + analysis + claim audit
 ```
-
-`make paper` also needs `latexmk`, BibTeX, and the TeX Live LaTeX/font packages
-listed in the CI workflow.
 
 `make_paper_tables.py` exits non-zero if any declared claim is unchecked or if
 an output disagrees. It writes `outputs/paper_tables/claim_audit.json` with each
