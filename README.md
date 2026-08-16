@@ -9,9 +9,11 @@ district-court opinion clusters, 751 with full text, and 417 rule-positive
 substantive clusters. The extractor labels five doctrinal constructs and the
 proof framework with a character-offset evidence snippet behind every flag, and
 a frozen three-pass Claude Opus 4.8 baseline provides the comparison reported
-in the paper.
+in the paper. A stored span exposes a match for inspection; it does not by
+itself separate a recitation from an adjudication.
 
-Mapped quantitative claims, every row of Tables 1--2, and all nine figures reproduce offline;
+Mapped quantitative claims and every row of Tables 1--2 reproduce offline, as do
+six of the paper's ten figures; the other four are committed assets;
 see [REPRODUCING.md](REPRODUCING.md) for the audit map. Model inference itself
 is not rerun because the release contains frozen labels rather than raw model
 responses or the exact inference prompt. The paper source lives in [paper/](paper/).
@@ -59,7 +61,7 @@ make reproduce
 ```
 
 This verifies frozen-input hashes, runs the test suite and deterministic analysis,
-checks the declared paper claims, and regenerates all nine figures. Generated tables,
+checks the declared paper claims, and regenerates the six generated figures. Generated tables,
 figures, and reports are written under ignored `data/processed/` and `outputs/` paths.
 
 Building the PDF also requires `latexmk`, BibTeX, and the LaTeX/font packages

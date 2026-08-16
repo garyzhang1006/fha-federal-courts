@@ -2,7 +2,7 @@
 
 The paper is *FHA-443: An Evidence-Anchored Corpus and Extractor for Fair
 Housing Act Doctrine in U.S. District-Court Opinions*. The 71-claim audit map,
-every row of Tables 1--2, and all nine figures reproduce offline from frozen inputs. No API
+every row of Tables 1--2, and six of the paper's ten figures reproduce offline from frozen inputs. No API
 call is made. The workflow rescored frozen LLM labels; it does not rerun model
 inference because raw responses and the exact inference prompt are not released.
 
