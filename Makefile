@@ -30,6 +30,7 @@ schelling: pipeline
 
 figures: validation llm schelling
 	$(PYTHON) scripts/make_paper_figures.py
+	$(PYTHON) scripts/make_paper_figures_house.py
 
 paper: figures paper-tables
 	cd paper && latexmk -pdf -bibtex -interaction=nonstopmode -halt-on-error fha443.tex

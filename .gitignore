@@ -21,3 +21,5 @@ data/raw/synthetic_corpus.jsonl
 data/external/synthetic_housing_panel.csv
 data/processed/_synth_truth.json
 data/processed/*.csv
+_texbuild/
+paper/media/*_orig_backup.png
