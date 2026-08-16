@@ -8,7 +8,7 @@ FHA-443 holds 937 candidate records, 757 canonicalized Nature of Suit 443
 district-court opinion clusters, 751 with full text, and 417 rule-positive
 substantive clusters. The extractor labels five doctrinal constructs and the
 proof framework, attaching character offsets and snippets to its matches, and
-a frozen three-pass Claude Opus 4.8 baseline provides the comparison reported
+a frozen three-pass Claude Opus 5 baseline provides the comparison reported
 in the paper. A stored span exposes a match for inspection; it does not by
 itself separate a recitation from an adjudication.
 
@@ -27,10 +27,10 @@ supports the comparison but not an audit of the model's stated rationale.
 
 | Measure | Regex | Frozen LLM |
 |---|---:|---:|
-| Micro F1 over five constructs | 0.767 | 0.872 |
-| Proof-framework accuracy | 0.774 | 0.914 |
+| Micro F1 over five constructs | 0.767 | 0.884 |
+| Proof-framework accuracy | 0.774 | 0.935 |
 
-Refusal and steering defeat both extractors, at F1 0.67 and 0.61. Once labels are
+Refusal and steering are the weakest construct for both extractors, at F1 0.67 and 0.69. Once labels are
 corrected, disparate treatment leads the docket at 46.1 percent against 13.2
 percent for disparate impact (exact McNemar p < .0001), and circuits range from 8
 to 54 percent in impact language, so any cross-circuit index needs a case-mix

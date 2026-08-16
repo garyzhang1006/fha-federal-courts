@@ -156,7 +156,7 @@
   "9628652": {
    "disparate_treatment": 1,
    "disparate_impact": 0,
-   "refusal_rent_sell": 0,
+   "refusal_rent_sell": 1,
    "reasonable_accommodation": 0,
    "zoning_exclusionary": 1,
    "framework": "none",
@@ -165,10 +165,10 @@
   "9628672": {
    "disparate_treatment": 1,
    "disparate_impact": 0,
-   "refusal_rent_sell": 0,
+   "refusal_rent_sell": 1,
    "reasonable_accommodation": 0,
    "zoning_exclusionary": 1,
-   "framework": "mcdonnell",
+   "framework": "none",
    "n": 3
   },
   "9630644": {
@@ -205,7 +205,7 @@
    "reasonable_accommodation": 0,
    "zoning_exclusionary": 0,
    "framework": "none",
-   "n": 2
+   "n": 3
   },
   "9680357": {
    "disparate_treatment": 1,
@@ -408,8 +408,8 @@
   "9859556": {
    "disparate_treatment": 1,
    "disparate_impact": 0,
-   "refusal_rent_sell": 1,
-   "reasonable_accommodation": 1,
+   "refusal_rent_sell": 0,
+   "reasonable_accommodation": 0,
    "zoning_exclusionary": 0,
    "framework": "none",
    "n": 3
@@ -489,7 +489,7 @@
   "9965467": {
    "disparate_treatment": 1,
    "disparate_impact": 0,
-   "refusal_rent_sell": 1,
+   "refusal_rent_sell": 0,
    "reasonable_accommodation": 1,
    "zoning_exclusionary": 0,
    "framework": "none",
@@ -516,7 +516,7 @@
   "9980892": {
    "disparate_treatment": 0,
    "disparate_impact": 1,
-   "refusal_rent_sell": 1,
+   "refusal_rent_sell": 0,
    "reasonable_accommodation": 0,
    "zoning_exclusionary": 1,
    "framework": "none",
@@ -807,7 +807,7 @@
    "refusal_rent_sell": 0,
    "reasonable_accommodation": 1,
    "zoning_exclusionary": 0,
-   "framework": "hud",
+   "framework": "none",
    "n": 3
   },
   "10783818": {
@@ -1187,7 +1187,7 @@
    "refusal_rent_sell": 1,
    "reasonable_accommodation": 0,
    "zoning_exclusionary": 0,
-   "framework": "hud",
+   "framework": "none",
    "n": 3
   },
   "9676963": {
@@ -1265,7 +1265,7 @@
   "9721118": {
    "disparate_treatment": 0,
    "disparate_impact": 1,
-   "refusal_rent_sell": 0,
+   "refusal_rent_sell": 1,
    "reasonable_accommodation": 0,
    "zoning_exclusionary": 0,
    "framework": "hud",
@@ -1362,7 +1362,7 @@
    "n": 3
   },
   "9774025": {
-   "disparate_treatment": 0,
+   "disparate_treatment": 1,
    "disparate_impact": 0,
    "refusal_rent_sell": 0,
    "reasonable_accommodation": 0,
@@ -1371,10 +1371,10 @@
    "n": 3
   },
   "9808330": {
-   "disparate_treatment": 0,
+   "disparate_treatment": 1,
    "disparate_impact": 0,
    "refusal_rent_sell": 0,
-   "reasonable_accommodation": 1,
+   "reasonable_accommodation": 0,
    "zoning_exclusionary": 1,
    "framework": "none",
    "n": 3
@@ -1590,7 +1590,7 @@
    "disparate_treatment": 0,
    "disparate_impact": 0,
    "refusal_rent_sell": 0,
-   "reasonable_accommodation": 0,
+   "reasonable_accommodation": 1,
    "zoning_exclusionary": 0,
    "framework": "none",
    "n": 3
@@ -1632,9 +1632,9 @@
    "n": 3
   },
   "9969925": {
-   "disparate_treatment": 0,
+   "disparate_treatment": 1,
    "disparate_impact": 0,
-   "refusal_rent_sell": 0,
+   "refusal_rent_sell": 1,
    "reasonable_accommodation": 0,
    "zoning_exclusionary": 0,
    "framework": "none",
@@ -1706,7 +1706,7 @@
   "10179253": {
    "disparate_treatment": 0,
    "disparate_impact": 1,
-   "refusal_rent_sell": 1,
+   "refusal_rent_sell": 0,
    "reasonable_accommodation": 0,
    "zoning_exclusionary": 0,
    "framework": "none",
@@ -1722,8 +1722,8 @@
    "n": 3
   },
   "10192438": {
-   "disparate_treatment": 0,
-   "disparate_impact": 0,
+   "disparate_treatment": 1,
+   "disparate_impact": 1,
    "refusal_rent_sell": 0,
    "reasonable_accommodation": 0,
    "zoning_exclusionary": 0,
@@ -1745,7 +1745,7 @@
    "refusal_rent_sell": 0,
    "reasonable_accommodation": 0,
    "zoning_exclusionary": 0,
-   "framework": "mcdonnell",
+   "framework": "none",
    "n": 3
   },
   "10198279": {
@@ -1778,7 +1778,7 @@
   "10212489": {
    "disparate_treatment": 1,
    "disparate_impact": 0,
-   "refusal_rent_sell": 0,
+   "refusal_rent_sell": 1,
    "reasonable_accommodation": 0,
    "zoning_exclusionary": 0,
    "framework": "none",
@@ -1848,7 +1848,7 @@
    "n": 3
   },
   "10294235": {
-   "disparate_treatment": 1,
+   "disparate_treatment": 0,
    "disparate_impact": 0,
    "refusal_rent_sell": 0,
    "reasonable_accommodation": 1,
@@ -2184,16 +2184,16 @@
    "disparate_treatment": 0,
    "disparate_impact": 0,
    "refusal_rent_sell": 0,
-   "reasonable_accommodation": 0,
+   "reasonable_accommodation": 1,
    "zoning_exclusionary": 0,
    "framework": "none",
    "n": 3
   }
  },
- "selfConsistency": 0.9877,
+ "selfConsistency": 0.9827,
  "counts": {
   "requested": 729,
-  "returned": 728,
+  "returned": 729,
   "goldCases": 93,
   "randCases": 150
  }

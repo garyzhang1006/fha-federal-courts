@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Label the 93-case human overlap with a local model via Ollama.
 
-Mirrors the frozen Opus 4.8 protocol: same codebook, same five claim labels plus the
+Mirrors the frozen Opus 5 protocol: same codebook, same five claim labels plus the
 framework field, three independent passes, per-field majority vote. Writes results
 incrementally so the run is resumable.
 

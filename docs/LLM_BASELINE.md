@@ -5,12 +5,11 @@ model during reproduction.
 
 ## Provenance
 
-- Model: `claude-opus-4-8`
+- Model: `claude-opus-5`
 - Passes: three independent labels per opinion; per-field majority vote reported
 - Human overlap: 93 cases from `data/validation/gold_human_codings.json`
 - Random draw: 150 cases from the 658-case non-overlap frame, seed `20260720`
-- Returned jobs: 728 of 729; the missing pass is cluster `9672005`, whose two returned
-  passes agree on all fields
+- Returned jobs: 729 of 729; every case carries all three passes
 
 The human overlap is the only set with a reference label. The random-draw labels are model
 silver labels used for robustness and prevalence checks.

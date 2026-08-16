@@ -216,7 +216,7 @@ def test_committed_majority_votes_rederive(raw_labels, committed_votes):
     assert llm.self_consistency(raw_labels["labels"]) == pytest.approx(
         committed_votes["selfConsistency"], abs=5e-5)
     assert llm.self_consistency(raw_labels["labels"]) == pytest.approx(
-        0.9877, abs=5e-5)
+        0.9827, abs=5e-5)
 
 
 def test_random_sample_substantive_subset(substantive_ids):
@@ -231,7 +231,7 @@ def test_random_sample_substantive_subset(substantive_ids):
 
 def test_llm_prevalence_on_substantive_subset(substantive_ids, committed_votes):
     votes = committed_votes["randVote"]
-    expected = {"disparate_treatment": 0.461, "reasonable_accommodation": 0.224,
+    expected = {"disparate_treatment": 0.461, "reasonable_accommodation": 0.211,
                 "disparate_impact": 0.132, "refusal_rent_sell": 0.171,
                 "zoning_exclusionary": 0.079}
     for claim, target in expected.items():
@@ -249,8 +249,8 @@ def test_paired_prevalence_contrasts(substantive_ids, committed_votes):
                   if not votes[str(c)][a] and votes[str(c)][b])
         return n10, n01
 
-    cases = [("reasonable_accommodation", "disparate_impact", 15, 8, 0.2100),
-             ("disparate_treatment", "reasonable_accommodation", 31, 13, 0.0096),
+    cases = [("reasonable_accommodation", "disparate_impact", 14, 8, 0.2863),
+             ("disparate_treatment", "reasonable_accommodation", 32, 13, 0.0066),
              ("disparate_treatment", "disparate_impact", 28, 3, 0.0000)]
     for a, b, exp10, exp01, exp_p in cases:
         n10, n01 = discordant(a, b)
